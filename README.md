@@ -73,6 +73,11 @@ Suggested structure — that's genuinely the whole thing:
 ```
 screen-pricing/
 ├── index.html
+├── manifest.json
+├── sw.js
+├── icon-192.png
+├── icon-512.png
+├── icon-maskable-512.png
 └── README.md
 ```
 
@@ -119,7 +124,15 @@ Once deployed, add it to the home screen on the counter tablet or your phone:
 
 It's mobile-first (560px max width, big tap targets on the qty stepper) so it works fine one-handed at the bench.
 
-If you want it to work offline, that's a service worker + `manifest.json` away — worth doing if the back of the store has bad signal.
+### Installable PWA (offline-capable)
+
+The app ships as an installable Progressive Web App, so "Add to Home Screen" gives it a real app icon and it keeps working with no signal:
+
+- `manifest.json` — app name, Ace-red theme, icons
+- `sw.js` — service worker caching the app shell (network-first for the page so a redeploy is picked up when online, cache fallback when offline)
+- `icon-192.png`, `icon-512.png`, `icon-maskable-512.png` — home-screen icons
+
+Requirements: the service worker only registers over **HTTPS** (or `localhost`) — it will not activate from a `file://` open, but Vercel serves HTTPS so it just works once deployed. Bump the `CACHE` version string in `sw.js` whenever you change a cached file so tablets pull the new version.
 
 ## Notes / open items
 

@@ -5,6 +5,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#c8102e">
 <title>Screen Pricing — Ace Hardware, Barnegat</title>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Screen Pricing">
 <style>
   :root{
     --red:#c8102e;
@@ -185,6 +191,13 @@ function calc(){
 document.getElementById('petLabel').textContent = PET_UPCHARGE;
 document.getElementById('taxPct').textContent = '(' + (TAX * 100).toFixed(3).replace(/\.?0+$/,'') + '%)';
 calc();
+
+// Register the service worker for offline / installable use.
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js').catch(() => {});
+  });
+}
 </script>
 </body>
 </html>
