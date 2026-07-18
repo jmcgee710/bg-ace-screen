@@ -112,9 +112,6 @@
       <button class="opt" data-mat="fiberglass" aria-pressed="false" onclick="pickMat('fiberglass')">
         Fiberglass <small>Same price as aluminum</small>
       </button>
-      <button class="opt" data-mat="pet" aria-pressed="false" onclick="pickMat('pet')">
-        Pet Fiberglass <small>+$<span id="petLabel">8</span> per screen</small>
-      </button>
     </div>
   </div>
 
@@ -140,19 +137,11 @@
 <script>
 // ——— EDIT THESE to match your store ———
 const RATE = 0.37;        // $ per inch (length + width)
-const PET_UPCHARGE = 8;   // $ per screen extra for pet mesh
 const TAX = 0.06625;      // NJ sales tax 6.625%
 // ———————————————————————————————
 
 let mat = 'aluminum';
 let qty = 1;
-
-function upchargeFor(m){
-  switch(m){
-    case 'pet': return PET_UPCHARGE;
-    default:    return 0;
-  }
-}
 
 function pickMat(m){
   mat = m;
@@ -176,7 +165,7 @@ function calc(){
   const wid = parseFloat(document.getElementById('wid').value) || 0;
 
   const base      = (len + wid) * RATE;
-  const perScreen = base + upchargeFor(mat);
+  const perScreen = base;
   const subtotal  = perScreen * qty;
   const tax       = subtotal * TAX;
   const total     = subtotal + tax;
@@ -188,7 +177,6 @@ function calc(){
 }
 
 // Init
-document.getElementById('petLabel').textContent = PET_UPCHARGE;
 document.getElementById('taxPct').textContent = '(' + (TAX * 100).toFixed(3).replace(/\.?0+$/,'') + '%)';
 calc();
 

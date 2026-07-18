@@ -6,7 +6,7 @@ Single-file HTML calculator for window/door screen rebuild quotes. No build step
 
 ```
 base       = (length + width) × RATE
-perScreen  = base + materialUpcharge
+perScreen  = base
 subtotal   = perScreen × quantity
 tax        = subtotal × TAX
 total      = subtotal + tax
@@ -16,18 +16,16 @@ Dimensions are in inches. `RATE` is dollars per inch of combined length + width.
 
 ## Configuration
 
-All pricing lives in three constants at the top of the `<script>` block in `index.html`. Change these, save, redeploy.
+All pricing lives in two constants at the top of the `<script>` block in `index.html`. Change these, save, redeploy.
 
 | Constant | Current | Meaning |
 |---|---|---|
 | `RATE` | `0.37` | $ per inch (length + width). Applies to aluminum and fiberglass alike. |
-| `PET_UPCHARGE` | `8` | Flat $ added **per screen** for pet-resistant fiberglass. **Placeholder — replace with the real number.** |
 | `TAX` | `0.06625` | NJ sales tax, 6.625%. |
 
 ```js
 // ——— EDIT THESE to match your store ———
 const RATE = 0.37;        // $ per inch (length + width)
-const PET_UPCHARGE = 8;   // $ per screen extra for pet mesh
 const TAX = 0.06625;      // NJ sales tax 6.625%
 // ———————————————————————————————
 ```
@@ -36,9 +34,8 @@ const TAX = 0.06625;      // NJ sales tax 6.625%
 
 - **Aluminum** — base price
 - **Fiberglass** — base price (same as aluminum)
-- **Pet Fiberglass** — base + `PET_UPCHARGE` per screen
 
-To add a material later: add a `<button class="opt" data-mat="xyz" onclick="pickMat('xyz')">` to the `.opt-grid`, then add a case to `upchargeFor()`.
+Both materials are currently the same price. To add a material with an upcharge later: add a `<button class="opt" data-mat="xyz" onclick="pickMat('xyz')">` to the `.opt-grid`, and reintroduce a per-material upcharge in `calc()`.
 
 ## Local use
 
@@ -136,6 +133,6 @@ Requirements: the service worker only registers over **HTTPS** (or `localhost`) 
 
 ## Notes / open items
 
-- `PET_UPCHARGE` is still a guess. Set it to the real number before anyone quotes off this.
+- Pet-resistant fiberglass was removed for now. When it comes back, re-add the option and its per-screen upcharge.
 - Prices are per screen, not per square foot. That's the store's existing formula, kept as-is on purpose.
 - Tax is applied to the full subtotal. If screen labor is ever treated differently for NJ sales tax purposes, that logic would need to split out.
