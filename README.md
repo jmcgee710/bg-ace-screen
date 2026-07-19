@@ -20,19 +20,16 @@ Orders with mixed sizes are quoted as multiple lines. The entry form (dimensions
 
 ## Configuration
 
-All pricing lives in two constants at the top of the `<script>` block in `index.html`. Change these, save, redeploy.
+Rate and tax are editable **in the app**: tap the ⚙ button in the header, change the values, done — they apply instantly and are saved on the device (`localStorage`), so no redeploy is needed for a price change. **Reset to defaults** in the same panel returns to the shipped values.
 
-| Constant | Current | Meaning |
+The shipped defaults live at the top of the `<script>` block in `index.html`:
+
+| Constant | Default | Meaning |
 |---|---|---|
-| `RATE` | `0.37` | $ per inch (length + width). Applies to aluminum and fiberglass alike. |
-| `TAX` | `0.06625` | NJ sales tax, 6.625%. |
+| `DEFAULT_RATE` | `0.37` | $ per inch (length + width). Applies to aluminum and fiberglass alike. |
+| `DEFAULT_TAX` | `0.06625` | NJ sales tax, 6.625%. |
 
-```js
-// ——— EDIT THESE to match your store ———
-const RATE = 0.37;        // $ per inch (length + width)
-const TAX = 0.06625;      // NJ sales tax 6.625%
-// ———————————————————————————————
-```
+Note: once a device has saved its own settings, redeploying with new defaults won't change that device — its stored values win until someone taps **Reset to defaults**.
 
 ### Materials
 
