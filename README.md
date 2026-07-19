@@ -5,14 +5,18 @@ Single-file HTML calculator for window/door screen rebuild quotes. No build step
 ## Pricing model
 
 ```
-base       = (length + width) × RATE
-perScreen  = base
-subtotal   = perScreen × quantity
+perScreen  = (length + width) × RATE          — per line
+lineTotal  = perScreen × quantity
+subtotal   = Σ lineTotal                       — all lines in the quote
 tax        = subtotal × TAX
 total      = subtotal + tax
 ```
 
 Dimensions are in inches. `RATE` is dollars per inch of combined length + width.
+
+### Quotes
+
+Orders with mixed sizes are quoted as multiple lines. The entry form (dimensions, material, quantity) is the current line; **+ Add screen to quote** commits it to the quote list and clears the form for the next size. The screen being typed always counts toward the totals, so a single-screen quote never needs the Add button. Lines can be removed individually (✕) or all at once (**Clear quote**). Quotes live in memory only — a page reload starts fresh.
 
 ## Configuration
 

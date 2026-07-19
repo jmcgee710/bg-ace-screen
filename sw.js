@@ -1,6 +1,6 @@
 // Service worker for the Screen Pricing calculator.
 // Bump CACHE when you change any cached file so clients pull the new version.
-const CACHE = 'screen-pricing-v2';
+const CACHE = 'screen-pricing-v3';
 const ASSETS = [
   './',
   './index.html',
