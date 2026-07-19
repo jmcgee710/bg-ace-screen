@@ -43,6 +43,12 @@
   }
   header h1{font-size:18px;margin:0;line-height:1.2}
   header p{margin:2px 0 0;font-size:13px;color:var(--muted)}
+  .gear{
+    margin-left:auto;width:44px;height:44px;flex:0 0 44px;border-radius:10px;
+    border:1.5px solid var(--line);background:#fff;font-size:20px;color:var(--muted);cursor:pointer;
+  }
+  .gear:active{background:var(--bg)}
+  .gear[aria-expanded=true]{border-color:var(--red);color:var(--red)}
   .card{
     background:var(--card);border:1px solid var(--line);border-radius:14px;
     padding:18px;margin-bottom:16px;
@@ -113,7 +119,20 @@
       <h1>Screen Pricing</h1>
       <p>Ace Hardware · Barnegat, NJ</p>
     </div>
+    <button class="gear" id="gearBtn" onclick="toggleSettings()" aria-expanded="false" aria-label="Pricing settings">⚙</button>
   </header>
+
+  <div class="card" id="settingsCard" hidden>
+    <label class="field">
+      <span>Rate <small>($ per inch of length + width)</small></span>
+      <input id="rateIn" type="number" inputmode="decimal" min="0" step="0.01" oninput="settingsChanged()">
+    </label>
+    <label class="field">
+      <span>Tax <small>(%)</small></span>
+      <input id="taxIn" type="number" inputmode="decimal" min="0" step="0.001" oninput="settingsChanged()">
+    </label>
+    <button class="clear-btn" onclick="resetSettings()">Reset to defaults</button>
+  </div>
 
   <div class="card">
     <label class="field">
@@ -169,10 +188,60 @@
 </div>
 
 <script>
-// ——— EDIT THESE to match your store ———
-const RATE = 0.37;        // $ per inch (length + width)
-const TAX = 0.06625;      // NJ sales tax 6.625%
-// ———————————————————————————————
+// ——— Store defaults. Live values are editable in the ⚙ panel and stored on-device ———
+const DEFAULT_RATE = 0.37;      // $ per inch (length + width)
+const DEFAULT_TAX  = 0.06625;   // NJ sales tax 6.625%
+const SETTINGS_KEY = 'screen-pricing-settings';
+// ————————————————————————————————————————————————————————————————————————————————
+
+let rate = DEFAULT_RATE;
+let tax  = DEFAULT_TAX;
+
+function loadSettings(){
+  try {
+    const s = JSON.parse(localStorage.getItem(SETTINGS_KEY));
+    if (s && s.rate > 0)  rate = s.rate;
+    if (s && s.tax >= 0)  tax  = s.tax;
+  } catch (e) {}
+}
+
+function saveSettings(){
+  try { localStorage.setItem(SETTINGS_KEY, JSON.stringify({rate, tax})); } catch (e) {}
+}
+
+function settingsChanged(){
+  const r = parseFloat(document.getElementById('rateIn').value);
+  const t = parseFloat(document.getElementById('taxIn').value);
+  rate = r > 0  ? r : DEFAULT_RATE;
+  tax  = t >= 0 ? t / 100 : DEFAULT_TAX;
+  saveSettings();
+  renderTaxPct();
+  calc();
+}
+
+function resetSettings(){
+  try { localStorage.removeItem(SETTINGS_KEY); } catch (e) {}
+  rate = DEFAULT_RATE;
+  tax  = DEFAULT_TAX;
+  fillSettingsInputs();
+  renderTaxPct();
+  calc();
+}
+
+function fillSettingsInputs(){
+  document.getElementById('rateIn').value = rate;
+  document.getElementById('taxIn').value  = +(tax * 100).toFixed(4);
+}
+
+function toggleSettings(){
+  const card = document.getElementById('settingsCard');
+  card.hidden = !card.hidden;
+  document.getElementById('gearBtn').setAttribute('aria-expanded', String(!card.hidden));
+}
+
+function renderTaxPct(){
+  document.getElementById('taxPct').textContent = '(' + (tax * 100).toFixed(3).replace(/\.?0+$/,'') + '%)';
+}
 
 let mat = 'aluminum';
 let qty = 1;
@@ -195,7 +264,7 @@ function bump(d){
 const money = n => '$' + n.toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2});
 
 const matLabel = m => m === 'fiberglass' ? 'Fiberglass' : 'Aluminum';
-const priceFor = l => (l.len + l.wid) * RATE * l.qty;
+const priceFor = l => (l.len + l.wid) * rate * l.qty;
 
 function currentEntry(){
   const len = Math.max(0, parseFloat(document.getElementById('len').value) || 0);
@@ -235,7 +304,7 @@ function renderQuote(){
   document.getElementById('quoteList').innerHTML = lines.map((l, i) =>
     '<div class="line">' +
       '<div class="desc">' + l.len + ' × ' + l.wid + (l.qty > 1 ? ' · ×' + l.qty : '') +
-        '<small>' + matLabel(l.mat) + ' · ' + money((l.len + l.wid) * RATE) + ' each</small></div>' +
+        '<small>' + matLabel(l.mat) + ' · ' + money((l.len + l.wid) * rate) + ' each</small></div>' +
       '<span class="amt">' + money(priceFor(l)) + '</span>' +
       '<button class="rm" onclick="removeLine(' + i + ')" aria-label="Remove screen">✕</button>' +
     '</div>'
@@ -245,14 +314,14 @@ function renderQuote(){
 function calc(){
   const e = currentEntry();
   const entryActive = e.len + e.wid > 0;
-  const perScreen   = entryActive ? (e.len + e.wid) * RATE : 0;
+  const perScreen   = entryActive ? (e.len + e.wid) * rate : 0;
 
   let subtotal = entryActive ? priceFor(e) : 0;
   let screens  = entryActive ? e.qty : 0;
   lines.forEach(l => { subtotal += priceFor(l); screens += l.qty; });
 
-  const tax   = subtotal * TAX;
-  const total = subtotal + tax;
+  const taxAmt = subtotal * tax;
+  const total  = subtotal + taxAmt;
 
   document.getElementById('addBtn').disabled = !(e.len > 0 && e.wid > 0);
   document.getElementById('entryAmt').textContent = money(entryActive ? priceFor(e) : 0);
@@ -263,12 +332,14 @@ function calc(){
   document.getElementById('perScreen').textContent = money(perScreen);
   document.getElementById('qtyEcho').textContent   = '(' + screens + (screens === 1 ? ' screen)' : ' screens)');
   document.getElementById('subtotal').textContent  = money(subtotal);
-  document.getElementById('tax').textContent        = money(tax);
+  document.getElementById('tax').textContent        = money(taxAmt);
   document.getElementById('total').textContent      = money(total);
 }
 
 // Init
-document.getElementById('taxPct').textContent = '(' + (TAX * 100).toFixed(3).replace(/\.?0+$/,'') + '%)';
+loadSettings();
+fillSettingsInputs();
+renderTaxPct();
 calc();
 
 // Register the service worker for offline / installable use.
