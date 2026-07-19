@@ -73,6 +73,29 @@
   }
   .step:active{background:var(--bg)}
   .qty-val{flex:1;text-align:center;font-size:28px;font-weight:800}
+  .add-btn{
+    width:100%;display:flex;justify-content:space-between;align-items:center;
+    padding:16px;border:none;border-radius:12px;margin-bottom:16px;
+    background:var(--red);color:#fff;font-size:16px;font-weight:700;cursor:pointer;
+  }
+  .add-btn:active{background:var(--red-dark)}
+  .add-btn:disabled{background:#d1d5db;cursor:default}
+  .line{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--line)}
+  .line:first-child{padding-top:2px}
+  .line:last-child{border-bottom:none;padding-bottom:2px}
+  .line .desc{flex:1;font-size:15px;font-weight:600}
+  .line .desc small{display:block;font-weight:400;color:var(--muted);font-size:13px}
+  .line .amt{font-size:15px}
+  .line .rm{
+    width:40px;height:40px;flex:0 0 40px;border:none;border-radius:10px;
+    background:transparent;color:var(--muted);font-size:22px;cursor:pointer;
+  }
+  .line .rm:active{color:var(--red)}
+  .clear-btn{
+    display:block;margin:4px auto 0;padding:10px 16px;background:none;border:none;
+    color:var(--muted);font-size:14px;text-decoration:underline;cursor:pointer;
+  }
+  [hidden]{display:none !important}
   .total-card{background:var(--ink);color:#fff;border:none}
   .row{display:flex;justify-content:space-between;align-items:baseline;padding:4px 0;font-size:15px}
   .row.muted{color:#c9cbd1}
@@ -124,12 +147,23 @@
     </div>
   </div>
 
+  <button class="add-btn" id="addBtn" onclick="addLine()" disabled>
+    <span>+ Add screen to quote</span><span class="amt" id="entryAmt">$0.00</span>
+  </button>
+
+  <div class="card" id="quoteCard" hidden>
+    <span class="field" style="font-size:14px;font-weight:600;margin-bottom:2px">Quote</span>
+    <div id="quoteList"></div>
+  </div>
+
   <div class="card total-card">
-    <div class="row muted"><span>Per screen</span><span class="amt" id="perScreen">$0.00</span></div>
-    <div class="row muted"><span>Subtotal <span id="qtyEcho">(×1)</span></span><span class="amt" id="subtotal">$0.00</span></div>
+    <div class="row muted"><span>Per screen <small id="perScreenNote">(this screen)</small></span><span class="amt" id="perScreen">$0.00</span></div>
+    <div class="row muted"><span>Subtotal <span id="qtyEcho">(0 screens)</span></span><span class="amt" id="subtotal">$0.00</span></div>
     <div class="row muted"><span>Tax <span id="taxPct"></span></span><span class="amt" id="tax">$0.00</span></div>
     <div class="row grand"><span>Total</span><span class="amt" id="total">$0.00</span></div>
   </div>
+
+  <button class="clear-btn" id="clearBtn" onclick="clearQuote()" hidden>Clear quote</button>
 
   <p class="foot">Prices are per screen. Dimensions in inches.</p>
 </div>
@@ -142,6 +176,7 @@ const TAX = 0.06625;      // NJ sales tax 6.625%
 
 let mat = 'aluminum';
 let qty = 1;
+let lines = [];   // committed screens: {len, wid, mat, qty}
 
 function pickMat(m){
   mat = m;
@@ -154,23 +189,79 @@ function pickMat(m){
 function bump(d){
   qty = Math.max(1, qty + d);
   document.getElementById('qtyVal').textContent = qty;
-  document.getElementById('qtyEcho').textContent = '(×' + qty + ')';
   calc();
 }
 
 const money = n => '$' + n.toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2});
 
-function calc(){
-  const len = parseFloat(document.getElementById('len').value) || 0;
-  const wid = parseFloat(document.getElementById('wid').value) || 0;
+const matLabel = m => m === 'fiberglass' ? 'Fiberglass' : 'Aluminum';
+const priceFor = l => (l.len + l.wid) * RATE * l.qty;
 
-  const base      = (len + wid) * RATE;
-  const perScreen = base;
-  const subtotal  = perScreen * qty;
-  const tax       = subtotal * TAX;
-  const total     = subtotal + tax;
+function currentEntry(){
+  const len = Math.max(0, parseFloat(document.getElementById('len').value) || 0);
+  const wid = Math.max(0, parseFloat(document.getElementById('wid').value) || 0);
+  return {len, wid, mat, qty};
+}
+
+function resetEntry(){
+  document.getElementById('len').value = '';
+  document.getElementById('wid').value = '';
+  qty = 1;
+  document.getElementById('qtyVal').textContent = qty;
+}
+
+function addLine(){
+  const e = currentEntry();
+  if (e.len <= 0 || e.wid <= 0) return;
+  lines.push(e);
+  resetEntry();
+  calc();
+}
+
+function removeLine(i){
+  lines.splice(i, 1);
+  calc();
+}
+
+function clearQuote(){
+  lines = [];
+  resetEntry();
+  calc();
+}
+
+function renderQuote(){
+  const card = document.getElementById('quoteCard');
+  card.hidden = lines.length === 0;
+  document.getElementById('quoteList').innerHTML = lines.map((l, i) =>
+    '<div class="line">' +
+      '<div class="desc">' + l.len + ' × ' + l.wid + (l.qty > 1 ? ' · ×' + l.qty : '') +
+        '<small>' + matLabel(l.mat) + ' · ' + money((l.len + l.wid) * RATE) + ' each</small></div>' +
+      '<span class="amt">' + money(priceFor(l)) + '</span>' +
+      '<button class="rm" onclick="removeLine(' + i + ')" aria-label="Remove screen">✕</button>' +
+    '</div>'
+  ).join('');
+}
+
+function calc(){
+  const e = currentEntry();
+  const entryActive = e.len + e.wid > 0;
+  const perScreen   = entryActive ? (e.len + e.wid) * RATE : 0;
+
+  let subtotal = entryActive ? priceFor(e) : 0;
+  let screens  = entryActive ? e.qty : 0;
+  lines.forEach(l => { subtotal += priceFor(l); screens += l.qty; });
+
+  const tax   = subtotal * TAX;
+  const total = subtotal + tax;
+
+  document.getElementById('addBtn').disabled = !(e.len > 0 && e.wid > 0);
+  document.getElementById('entryAmt').textContent = money(entryActive ? priceFor(e) : 0);
+  document.getElementById('perScreenNote').hidden = lines.length === 0;
+  document.getElementById('clearBtn').hidden = lines.length === 0;
+  renderQuote();
 
   document.getElementById('perScreen').textContent = money(perScreen);
+  document.getElementById('qtyEcho').textContent   = '(' + screens + (screens === 1 ? ' screen)' : ' screens)');
   document.getElementById('subtotal').textContent  = money(subtotal);
   document.getElementById('tax').textContent        = money(tax);
   document.getElementById('total').textContent      = money(total);
