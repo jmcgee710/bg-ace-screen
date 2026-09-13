@@ -5,7 +5,7 @@ Single-file HTML calculator for window/door screen rebuild quotes. No build step
 ## Pricing model
 
 ```
-perScreen  = (length + width) × RATE          — per line
+perScreen  = (length + width) × RATE + PET    — per line (PET only for pet screen)
 lineTotal  = perScreen × quantity
 subtotal   = Σ lineTotal                       — all lines in the quote
 tax        = subtotal × TAX
@@ -18,9 +18,18 @@ Dimensions are in inches. `RATE` is dollars per inch of combined length + width.
 
 Orders with mixed sizes are quoted as multiple lines. The entry form (dimensions, material, quantity) is the current line; **+ Add screen to quote** commits it to the quote list and clears the form for the next size. The screen being typed always counts toward the totals, so a single-screen quote never needs the Add button. Lines can be removed individually (✕) or all at once (**Clear quote**). Quotes live in memory only — a page reload starts fresh.
 
+### Printing (desktop)
+
+Open the app in any desktop browser. Enter the customer name/phone (optional), build the quote, then click **🖨 Print quote** (or press Ctrl+P). One print job produces two pages in the same card layout as the phone view:
+
+1. **Customer Copy** — keep for pickup
+2. **Store Copy** — attach to the screen; has blank lines for Ready / Customer called / Picked up
+
+A fully-typed screen that hasn't been added yet is included on the printout, same as in the totals. On the desktop, Enter in Length jumps to Width, and Enter in Width adds the screen. **Clear quote** also clears the customer name/phone for the next customer. Want both copies on one sheet? Choose "Pages per sheet: 2" in the print dialog.
+
 ## Configuration
 
-Rate and tax are editable **in the app**: tap the ⚙ button in the header, change the values, done — they apply instantly and are saved on the device (`localStorage`), so no redeploy is needed for a price change. **Reset to defaults** in the same panel returns to the shipped values.
+Rate, tax, and the pet screen upcharge are editable **in the app**: tap the ⚙ button in the header, change the values, done — they apply instantly and are saved on the device (`localStorage`), so no redeploy is needed for a price change. **Reset to defaults** in the same panel returns to the shipped values.
 
 The shipped defaults live at the top of the `<script>` block in `index.html`:
 
@@ -28,6 +37,7 @@ The shipped defaults live at the top of the `<script>` block in `index.html`:
 |---|---|---|
 | `DEFAULT_RATE` | `0.37` | $ per inch (length + width). Applies to aluminum and fiberglass alike. |
 | `DEFAULT_TAX` | `0.06625` | NJ sales tax, 6.625%. |
+| `DEFAULT_PET` | `8` | Flat $ added **per screen** for pet screen mesh. **Placeholder — set the real number.** |
 
 Note: once a device has saved its own settings, redeploying with new defaults won't change that device — its stored values win until someone taps **Reset to defaults**.
 
@@ -35,8 +45,9 @@ Note: once a device has saved its own settings, redeploying with new defaults wo
 
 - **Aluminum** — base price
 - **Fiberglass** — base price (same as aluminum)
+- **Pet Screen** — base price + pet upcharge per screen
 
-Both materials are currently the same price. To add a material with an upcharge later: add a `<button class="opt" data-mat="xyz" onclick="pickMat('xyz')">` to the `.opt-grid`, and reintroduce a per-material upcharge in `calc()`.
+To add another material: add a `<button class="opt" data-mat="xyz" onclick="pickMat('xyz')">` to the `.opt-grid`, give it a name in `matLabel`, and any upcharge in `eachFor`.
 
 ## Local use
 
@@ -134,6 +145,6 @@ Requirements: the service worker only registers over **HTTPS** (or `localhost`) 
 
 ## Notes / open items
 
-- Pet-resistant fiberglass was removed for now. When it comes back, re-add the option and its per-screen upcharge.
+- The pet screen upcharge default ($8) is still a guess. Set the real number in ⚙ (or `DEFAULT_PET`) before anyone quotes off this.
 - Prices are per screen, not per square foot. That's the store's existing formula, kept as-is on purpose.
 - Tax is applied to the full subtotal. If screen labor is ever treated differently for NJ sales tax purposes, that logic would need to split out.
