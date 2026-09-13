@@ -18,14 +18,25 @@ Dimensions are in inches. `RATE` is dollars per inch of combined length + width.
 
 Orders with mixed sizes are quoted as multiple lines. The entry form (dimensions, material, quantity) is the current line; **+ Add screen to quote** commits it to the quote list and clears the form for the next size. The screen being typed always counts toward the totals, so a single-screen quote never needs the Add button. Lines can be removed individually (✕) or all at once (**Clear quote**). Quotes live in memory only — a page reload starts fresh.
 
+### Desktop layout
+
+On screens 1024px and wider the app switches to a desktop layout: a dark sidebar (title, ⚙ settings, staff **Instructions**) and a wide entry form. From 1280px up, the quote/total/print panel is pinned in a right-hand column; between 1024–1279px it sits below the form. Phones and tablets keep the single-column layout.
+
+The Instructions list is plain HTML in the `<aside class="side">` block of `index.html` — edit it freely. The highlighted rule at the top: **Are the splines rubber? If no, we can't do the screen.**
+
+### Rules enforced by the app
+
+- **Splines are rubber** — a checkbox that must be ticked before each screen can be added (it clears after every add). A typed screen that isn't checked blocks printing until it's checked or cleared. The printout notes "splines checked: rubber ✓".
+- **Phone number is required to print** (at least 10 digits, i.e. with area code). Quoting a price without a phone still works; only the Print button is blocked, with a red hint explaining why. Customer name stays optional.
+
 ### Printing (desktop)
 
-Open the app in any desktop browser. Enter the customer name/phone (optional), build the quote, then click **🖨 Print quote** (or press Ctrl+P). One print job produces two pages in the same card layout as the phone view:
+Open the app in any desktop browser. Enter the customer phone (required), name (optional), and drop-off date (defaults to today), build the quote, then click **🖨 Print quote** (or press Ctrl+P). One print job produces two pages in the same card layout as the phone view:
 
 1. **Customer Copy** — keep for pickup
 2. **Store Copy** — attach to the screen; has blank lines for Ready / Customer called / Picked up
 
-A fully-typed screen that hasn't been added yet is included on the printout, same as in the totals. On the desktop, Enter in Length jumps to Width, and Enter in Width adds the screen. **Clear quote** also clears the customer name/phone for the next customer. Want both copies on one sheet? Choose "Pages per sheet: 2" in the print dialog.
+A fully-typed, splines-checked screen that hasn't been added yet is included on the printout. On the desktop, Enter in Length jumps to Width, and Enter in Width adds the screen. **Clear quote** also clears the customer name/phone and resets the drop-off date to today for the next customer. Want both copies on one sheet? Choose "Pages per sheet: 2" in the print dialog.
 
 ## Configuration
 

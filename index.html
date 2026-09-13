@@ -31,16 +31,25 @@
     line-height:1.4;
     padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
   }
-  .wrap{max-width:560px;margin:0 auto;padding:16px 16px 40px}
+  .app{max-width:560px;margin:0 auto;padding:16px 16px 40px}
+  .page-title{display:none}
   header{
     display:flex;align-items:center;gap:12px;
     padding:16px 4px 20px;
   }
-  .logo{
-    width:44px;height:44px;flex:0 0 44px;border-radius:10px;
-    background:var(--red);color:#fff;font-weight:800;font-size:20px;
-    display:flex;align-items:center;justify-content:center;letter-spacing:-1px;
+  .spline-check{
+    display:flex;align-items:center;gap:14px;cursor:pointer;
+    border:1.5px solid var(--line);transition:border-color .12s,background .12s;
   }
+  .spline-check input{width:28px;height:28px;flex:0 0 28px;margin:0;accent-color:var(--ok);cursor:pointer}
+  .spline-check .sc-text{font-size:16px;font-weight:700}
+  .spline-check .sc-text small{display:block;font-size:13px;font-weight:400;color:var(--muted)}
+  .spline-check.ok{border-color:var(--ok);background:rgba(15,122,61,.05)}
+  .spline-check.need{border-color:var(--red);background:rgba(200,16,46,.05)}
+  .spline-check.need .sc-text small{color:var(--red);font-weight:600}
+  .field span.req{display:inline;margin:0;color:var(--red);font-size:12px;font-weight:700}
+  input.invalid{border-color:var(--red)}
+  .print-hint{text-align:center;font-size:13px;color:var(--red);font-weight:600;margin:0 0 8px}
   header h1{font-size:18px;margin:0;line-height:1.2}
   header p{margin:2px 0 0;font-size:13px;color:var(--muted)}
   .gear{
@@ -109,11 +118,62 @@
   .row.grand .amt{font-size:32px;font-weight:800}
   .amt{font-variant-numeric:tabular-nums;font-weight:700}
   .foot{text-align:center;font-size:12px;color:var(--muted);margin-top:8px}
-  input[type=text],input[type=tel]{
+  input[type=text],input[type=tel],input[type=date]{
     width:100%;font-size:18px;padding:12px 14px;border:1px solid var(--line);
     border-radius:10px;background:#fff;color:var(--ink);font-family:inherit;
   }
-  input[type=text]:focus,input[type=tel]:focus{outline:none;border-color:var(--red);box-shadow:0 0 0 3px rgba(200,16,46,.12)}
+  input[type=text]:focus,input[type=tel]:focus,input[type=date]:focus{outline:none;border-color:var(--red);box-shadow:0 0 0 3px rgba(200,16,46,.12)}
+
+  /* ——— Instructions notes ——— */
+  .notes-title{display:block;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:10px}
+  .notes-alert{
+    border-left:4px solid var(--red);background:rgba(200,16,46,.07);border-radius:8px;
+    padding:10px 12px;font-size:14px;margin-bottom:10px;
+  }
+  .notes-alert strong{display:block;font-size:16px;color:var(--red);margin-bottom:2px}
+  .notes ol{margin:0;padding-left:20px;font-size:14px;color:#374151}
+  .notes li{padding:3px 0}
+
+  /* ——— Desktop: sidebar + two-column workspace ——— */
+  @media (min-width:1024px){
+    body{background:#eef0f3}
+    .app{
+      max-width:none;padding:0;
+      display:grid;grid-template-columns:280px minmax(0,1fr);min-height:100vh;
+    }
+    .side{
+      background:var(--ink);color:#fff;padding:24px 20px;
+      position:sticky;top:0;height:100vh;overflow-y:auto;
+    }
+    .side header{padding:4px 4px 24px}
+    .side header p{color:#9ca3af}
+    .side .gear{background:transparent;border-color:rgba(255,255,255,.2);color:#d1d5db}
+    .side .gear[aria-expanded=true]{border-color:#fff;color:#fff}
+    .side .card{background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.12);color:#fff}
+    .side .notes-title,.side .field small{color:#9ca3af}
+    .side .notes-alert{background:rgba(200,16,46,.22);border-left-color:#ff4d6a}
+    .side .notes-alert strong{color:#ff8a9c}
+    .side .notes ol{color:#e5e7eb}
+    .side .notes li{padding:6px 0}
+    .side .clear-btn{color:#9ca3af}
+    .main{padding:32px 36px 48px;max-width:780px}
+    .page-title{display:block;font-size:26px;margin:0 0 18px}
+    .cust-grid,.dims-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;align-items:end}
+    .cust-grid label.field,.dims-grid label.field{margin-bottom:0}
+    .opt-grid{grid-template-columns:repeat(auto-fit,minmax(150px,1fr))}
+    .opt:hover:not([aria-pressed=true]){border-color:#c4c8cf}
+    .step:hover,.print-btn:hover:not(:disabled){background:var(--bg)}
+    .add-btn:hover:not(:disabled){background:var(--red-dark)}
+  }
+  /* Wide screens: quote + total pinned in a right-hand column */
+  @media (min-width:1280px){
+    .app{grid-template-columns:300px minmax(0,1fr)}
+    .main{
+      display:grid;grid-template-columns:minmax(0,1fr) 380px;gap:28px;align-items:start;
+      max-width:1280px;
+    }
+    .summary{position:sticky;top:32px;padding-top:57px}
+  }
   .print-btn{
     width:100%;padding:16px;border:1.5px solid var(--ink);border-radius:12px;margin-bottom:8px;
     background:#fff;color:var(--ink);font-size:16px;font-weight:700;cursor:pointer;
@@ -126,7 +186,7 @@
   @page{size:letter;margin:0.5in}
   @media print{
     html,body{background:#fff;padding:0}
-    .wrap{display:none !important}
+    .app{display:none !important}
     #printArea{display:block}
   }
   .ticket{
@@ -135,7 +195,6 @@
   }
   .ticket:last-child{break-after:auto;page-break-after:auto}
   .ticket header{padding:0 0 12px;border-bottom:2px solid #000}
-  .ticket .logo{border:2px solid var(--red);background:#fff;color:var(--red)}
   .ticket header p{color:#333}
   .copy-tag{
     margin-left:auto;text-align:right;font-size:11px;font-weight:800;letter-spacing:.06em;
@@ -158,15 +217,31 @@
 </style>
 </head>
 <body>
-<div class="wrap">
+<div class="app">
+<aside class="side">
   <header>
-    <div class="logo">Ace</div>
     <div>
       <h1>Screen Pricing</h1>
       <p>Ace Hardware · Barnegat, NJ</p>
     </div>
     <button class="gear" id="gearBtn" onclick="toggleSettings()" aria-expanded="false" aria-label="Pricing settings">⚙</button>
   </header>
+
+  <!-- Staff instructions — edit this list freely -->
+  <div class="card notes">
+    <span class="notes-title">Instructions</span>
+    <div class="notes-alert">
+      <strong>Are the splines rubber?</strong>
+      If <b>no</b>, we can't do this screen — don't take it in.
+    </div>
+    <ol>
+      <li>Measure length and width in inches.</li>
+      <li>Enter the customer, phone number (required), and drop-off date.</li>
+      <li>Check the splines — tick <b>Splines are rubber</b> for each screen before adding it.</li>
+      <li>Add each size to the quote (Enter in Width adds it).</li>
+      <li>Print — give the customer copy to the customer, attach the store copy to the screen.</li>
+    </ol>
+  </div>
 
   <div class="card" id="settingsCard" hidden>
     <label class="field">
@@ -183,19 +258,28 @@
     </label>
     <button class="clear-btn" onclick="resetSettings()">Reset to defaults</button>
   </div>
+</aside>
 
-  <div class="card">
+<main class="main">
+<section class="entry">
+  <h2 class="page-title">New screen quote</h2>
+
+  <div class="card cust-grid">
     <label class="field">
-      <span>Customer name <small>(for printed ticket)</small></span>
+      <span>Customer name <small>(optional)</small></span>
       <input id="custName" type="text" autocomplete="off" placeholder="Optional">
     </label>
     <label class="field">
-      <span>Phone <small>(optional)</small></span>
-      <input id="custPhone" type="tel" autocomplete="off" placeholder="Optional">
+      <span>Phone <span class="req">* required</span></span>
+      <input id="custPhone" type="tel" autocomplete="off" placeholder="609-555-0123" required oninput="calc()">
+    </label>
+    <label class="field">
+      <span>Drop-off date</span>
+      <input id="dropoff" type="date">
     </label>
   </div>
 
-  <div class="card">
+  <div class="card dims-grid">
     <label class="field">
       <span>Length <small>(inches)</small></span>
       <input id="len" type="number" inputmode="decimal" min="0" step="0.5" placeholder="0" oninput="calc()" onkeydown="if(event.key==='Enter'){event.preventDefault();document.getElementById('wid').focus()}">
@@ -230,10 +314,19 @@
     </div>
   </div>
 
+  <label class="card spline-check" id="splineCard">
+    <input id="splines" type="checkbox" onchange="calc()">
+    <span class="sc-text">Splines are rubber
+      <small id="splineNote">Required for each screen. If not rubber, we can't do it.</small>
+    </span>
+  </label>
+
   <button class="add-btn" id="addBtn" onclick="addLine()" disabled>
     <span>+ Add screen to quote</span><span class="amt" id="entryAmt">$0.00</span>
   </button>
+</section>
 
+<section class="summary">
   <div class="card" id="quoteCard" hidden>
     <span class="field" style="font-size:14px;font-weight:600;margin-bottom:2px">Quote</span>
     <div id="quoteList"></div>
@@ -247,10 +340,13 @@
   </div>
 
   <button class="print-btn" id="printBtn" onclick="printQuote()" disabled>🖨 Print quote (customer + store copy)</button>
+  <p class="print-hint" id="printHint" hidden></p>
 
   <button class="clear-btn" id="clearBtn" onclick="clearQuote()" hidden>Clear quote</button>
 
   <p class="foot">Prices are per screen. Dimensions in inches.</p>
+</section>
+</main>
 </div>
 
 <div id="printArea" aria-hidden="true"></div>
@@ -352,13 +448,20 @@ function currentEntry(){
 function resetEntry(){
   document.getElementById('len').value = '';
   document.getElementById('wid').value = '';
+  document.getElementById('splines').checked = false;
   qty = 1;
   document.getElementById('qtyVal').textContent = qty;
 }
 
+const entryReady  = e => e.len > 0 && e.wid > 0;
+const splinesOK   = () => document.getElementById('splines').checked;
+const phoneDigits = () => document.getElementById('custPhone').value.replace(/\D/g, '').length;
+const phoneOK     = () => phoneDigits() >= 10;
+
 function addLine(){
   const e = currentEntry();
-  if (e.len <= 0 || e.wid <= 0) return;
+  if (!entryReady(e)) return;
+  if (!splinesOK()) { document.getElementById('splines').focus(); return; }
   lines.push(e);
   resetEntry();
   calc();
@@ -374,32 +477,55 @@ function clearQuote(){
   resetEntry();
   document.getElementById('custName').value = '';
   document.getElementById('custPhone').value = '';
+  document.getElementById('dropoff').value = todayISO();
   calc();
 }
 
-// Everything on the quote, including a fully-typed screen that hasn't been added yet.
+function todayISO(){
+  const d = new Date();
+  return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+}
+
+// "2026-09-13" → "Sun, Sep 13, 2026" (parsed as a local date, no timezone shift)
+function fmtDate(iso){
+  const [y, m, d] = iso.split('-').map(Number);
+  if (!y || !m || !d) return '';
+  return new Date(y, m - 1, d).toLocaleDateString('en-US', {weekday:'short', month:'short', day:'numeric', year:'numeric'});
+}
+
+// Everything on the quote, including a fully-typed, splines-checked screen that hasn't been added yet.
 function quoteLines(){
   const e = currentEntry();
-  return (e.len > 0 && e.wid > 0) ? lines.concat([e]) : lines.slice();
+  return (entryReady(e) && splinesOK()) ? lines.concat([e]) : lines.slice();
+}
+
+// Why the quote can't be printed yet ('' when it can).
+function printBlocker(){
+  const e = currentEntry();
+  if (entryReady(e) && !splinesOK()) return 'Check "Splines are rubber" for the screen being entered.';
+  if (quoteLines().length === 0)     return '';
+  if (!phoneOK())                    return 'Enter the customer\'s phone number (with area code) to print.';
+  return '';
 }
 
 function ticketHTML(copy, sub, all, when){
   const name  = document.getElementById('custName').value.trim();
   const phone = document.getElementById('custPhone').value.trim();
+  const drop  = fmtDate(document.getElementById('dropoff').value);
   const subtotal = all.reduce((s, l) => s + priceFor(l), 0);
   const screens  = all.reduce((s, l) => s + l.qty, 0);
   const taxAmt   = subtotal * tax;
   return '<div class="ticket">' +
-    '<header><div class="logo">Ace</div>' +
+    '<header>' +
       '<div><h1>Screen Pricing</h1><p>Ace Hardware · Barnegat, NJ</p></div>' +
       '<div class="copy-tag">' + copy + '<small>' + sub + '</small></div>' +
     '</header>' +
     '<div class="t-box">' +
       '<div class="t-row"><span>Customer</span><strong>' + (name ? esc(name) : '________________________') + '</strong></div>' +
-      '<div class="t-row"><span>Phone</span><strong>' + (phone ? esc(phone) : '________________________') + '</strong></div>' +
-      '<div class="t-row"><span>Date</span><strong>' + when + '</strong></div>' +
+      '<div class="t-row"><span>Phone</span><strong>' + esc(phone) + '</strong></div>' +
+      '<div class="t-row"><span>Drop-off</span><strong>' + (drop || '________________________') + '</strong></div>' +
     '</div>' +
-    '<div class="t-box"><div class="t-label">Screens</div>' +
+    '<div class="t-box"><div class="t-label">Screens · splines checked: rubber ✓</div>' +
       all.map(l =>
         '<div class="t-line"><div class="desc">' + l.len + '″ × ' + l.wid + '″' + (l.qty > 1 ? ' · ×' + l.qty : '') +
           '<small>' + matLabel(l.mat) + ' · ' + money(eachFor(l)) + ' each</small></div>' +
@@ -414,19 +540,23 @@ function ticketHTML(copy, sub, all, when){
     (copy === 'STORE COPY'
       ? '<div class="t-sign"><div>Ready (date)</div><div>Customer called</div><div>Picked up</div></div>'
       : '<p class="t-foot">Thank you! Please keep this copy for pickup.</p>') +
+    '<p class="t-foot">Printed ' + when + '</p>' +
   '</div>';
 }
 
 function renderPrint(){
   const all = quoteLines();
+  const blocker = printBlocker() || (all.length === 0 ? 'Add a screen to the quote first.' : '');
   const when = new Date().toLocaleString('en-US', {month:'short', day:'numeric', year:'numeric', hour:'numeric', minute:'2-digit'});
-  document.getElementById('printArea').innerHTML = all.length === 0 ? '' :
-    ticketHTML('CUSTOMER COPY', 'Keep for pickup', all, when) +
-    ticketHTML('STORE COPY', 'Attach to screen', all, when);
+  // Ctrl+P can't be blocked, so print the reason instead of an incomplete ticket.
+  document.getElementById('printArea').innerHTML = blocker
+    ? '<div class="ticket"><h1>Can\'t print this quote yet</h1><p>' + esc(blocker) + '</p></div>'
+    : ticketHTML('CUSTOMER COPY', 'Keep for pickup', all, when) +
+      ticketHTML('STORE COPY', 'Attach to screen', all, when);
 }
 
 function printQuote(){
-  if (quoteLines().length === 0) return;
+  if (quoteLines().length === 0 || printBlocker()) return;
   renderPrint();
   window.print();
 }
@@ -459,11 +589,24 @@ function calc(){
   const taxAmt = subtotal * tax;
   const total  = subtotal + taxAmt;
 
-  document.getElementById('addBtn').disabled = !(e.len > 0 && e.wid > 0);
+  const ready = entryReady(e), checked = splinesOK();
+  document.getElementById('addBtn').disabled = !(ready && checked);
+  document.getElementById('addBtn').firstElementChild.textContent =
+    ready && !checked ? 'Check splines first' : '+ Add screen to quote';
   document.getElementById('entryAmt').textContent = money(entryActive ? priceFor(e) : 0);
+  document.getElementById('splineCard').classList.toggle('ok', checked);
+  document.getElementById('splineCard').classList.toggle('need', ready && !checked);
+  document.getElementById('splineNote').textContent = ready && !checked
+    ? 'Confirm before adding. If not rubber, we can\'t do this screen.'
+    : 'Required for each screen. If not rubber, we can\'t do it.';
+
+  const blocker = printBlocker();
+  document.getElementById('printBtn').disabled = quoteLines().length === 0 || !!blocker;
+  document.getElementById('printHint').hidden = !blocker;
+  document.getElementById('printHint').textContent = blocker;
+  document.getElementById('custPhone').classList.toggle('invalid', quoteLines().length > 0 && !phoneOK());
   document.getElementById('perScreenNote').hidden = lines.length === 0;
   document.getElementById('clearBtn').hidden = lines.length === 0;
-  document.getElementById('printBtn').disabled = quoteLines().length === 0;
   document.getElementById('petLabel').textContent = money(pet);
   renderQuote();
 
@@ -477,6 +620,7 @@ function calc(){
 // Init
 loadSettings();
 fillSettingsInputs();
+document.getElementById('dropoff').value = todayISO();
 renderTaxPct();
 calc();
 
