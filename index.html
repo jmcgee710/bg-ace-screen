@@ -53,8 +53,12 @@
   header h1{font-size:18px;margin:0;line-height:1.2}
   header p{margin:2px 0 0;font-size:13px;color:var(--muted)}
   header p.addr{margin-top:1px;font-size:12px}
-  input[readonly]{background:var(--bg);color:var(--ink);cursor:default}
-  input[readonly]:focus{border-color:var(--line);box-shadow:none}
+  .logo{
+    width:64px;height:64px;flex:0 0 64px;border-radius:14px;
+    background:#fff;padding:3px;object-fit:contain;display:block;
+  }
+  input[type=text][readonly]{background:var(--bg);color:var(--ink);cursor:default}
+  input[type=text][readonly]:focus{border-color:var(--line);box-shadow:none}
   .gear{
     margin-left:auto;width:44px;height:44px;flex:0 0 44px;border-radius:10px;
     border:1.5px solid var(--line);background:#fff;font-size:20px;color:var(--muted);cursor:pointer;
@@ -142,13 +146,15 @@
     body{background:#eef0f3}
     .app{
       max-width:none;padding:0;
-      display:grid;grid-template-columns:280px minmax(0,1fr);min-height:100vh;
+      display:grid;grid-template-columns:320px minmax(0,1fr);min-height:100vh;
     }
     .side{
       background:var(--ink);color:#fff;padding:24px 20px;
       position:sticky;top:0;height:100vh;overflow-y:auto;
     }
-    .side header{padding:4px 4px 24px}
+    .side header{padding:4px 0 24px;position:relative;align-items:flex-start}
+    .side header h1{padding-right:40px}
+    .side .gear{position:absolute;top:0;right:0;width:36px;height:36px;font-size:17px}
     .side header p{color:#9ca3af}
     .side .gear{background:transparent;border-color:rgba(255,255,255,.2);color:#d1d5db}
     .side .gear[aria-expanded=true]{border-color:#fff;color:#fff}
@@ -170,7 +176,7 @@
   }
   /* Wide screens: quote + total pinned in a right-hand column */
   @media (min-width:1280px){
-    .app{grid-template-columns:300px minmax(0,1fr)}
+    .app{grid-template-columns:320px minmax(0,1fr)}
     .main{
       display:grid;grid-template-columns:minmax(0,1fr) 380px;gap:28px;align-items:start;
       max-width:1280px;
@@ -199,6 +205,9 @@
   .ticket:last-child{break-after:auto;page-break-after:auto}
   .ticket header{padding:0 0 12px;border-bottom:2px solid #000}
   .ticket header p{color:#333}
+  .ticket .logo{width:64px;height:64px;flex-basis:64px;padding:0;border-radius:0}
+  .ticket .copy-tag{white-space:nowrap;flex:0 0 auto}
+  .ticket header p{white-space:nowrap}
   .copy-tag{
     margin-left:auto;text-align:right;font-size:11px;font-weight:800;letter-spacing:.06em;
     border:2px solid #000;border-radius:6px;padding:5px 8px;line-height:1.2;
@@ -227,6 +236,7 @@
 <div class="app">
 <aside class="side">
   <header>
+    <img class="logo" src="logo.jpg" alt="Barnegat Ace Hardware logo">
     <div>
       <h1>Screen Pricing</h1>
       <p>Ace Hardware · Barnegat, NJ</p>
@@ -544,8 +554,9 @@ function ticketHTML(copy, sub, all, when){
   const taxAmt   = subtotal * tax;
   return '<div class="ticket">' +
     '<header>' +
+      '<img class="logo" src="logo.jpg" alt="">' +
       '<div><h1>Screen Pricing</h1><p>Ace Hardware · Barnegat, NJ</p>' +
-        '<p class="addr">895 West Bay Ave, Barnegat, NJ · (609) 891-4744</p></div>' +
+        '<p class="addr">895 West Bay Ave, Barnegat, NJ<br>(609) 891-4744</p></div>' +
       '<div class="copy-tag">' + copy + '<small>' + sub + '</small></div>' +
     '</header>' +
     '<div class="t-box">' +

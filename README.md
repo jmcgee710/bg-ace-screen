@@ -95,6 +95,7 @@ screen-pricing/
 ├── index.html
 ├── manifest.json
 ├── sw.js
+├── logo.jpg              ← store logo (header + printed tickets), 400×400
 ├── icon-192.png
 ├── icon-512.png
 ├── icon-maskable-512.png
