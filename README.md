@@ -31,10 +31,10 @@ The Instructions list is plain HTML in the `<aside class="side">` block of `inde
 
 ### Printing (desktop)
 
-Open the app in any desktop browser. Enter the customer phone (required), name (optional), and drop-off date (defaults to today), build the quote, then click **🖨 Print quote** (or press Ctrl+P). One print job produces two pages in the same card layout as the phone view:
+Open the app in any desktop browser. Enter the customer phone (required), name (optional), and drop-off date (defaults to today), build the quote, then click **🖨 Print quote** (or press Ctrl+P). The **promise date** is filled in automatically as one week after the drop-off date (`PROMISE_DAYS` in `index.html`). One print job produces two pages in the same card layout as the phone view, each with the store address and phone (895 West Bay Ave, Barnegat, NJ · (609) 891-4744), drop-off and promise dates:
 
 1. **Customer Copy** — keep for pickup
-2. **Store Copy** — attach to the screen; has blank lines for Ready / Customer called / Picked up
+2. **Store Copy** — attach to the screen; has blank lines for Ready / Customer called / Picked up, plus a **customer signature** and date line to sign at pickup before filing
 
 A fully-typed, splines-checked screen that hasn't been added yet is included on the printout. On the desktop, Enter in Length jumps to Width, and Enter in Width adds the screen. **Clear quote** also clears the customer name/phone and resets the drop-off date to today for the next customer. Want both copies on one sheet? Choose "Pages per sheet: 2" in the print dialog.
 
